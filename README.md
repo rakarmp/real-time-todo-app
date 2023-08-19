@@ -16,7 +16,7 @@ A simple real-time to-do list application built using Node.js and Socket.io. Thi
 1. Clone this repository:
 
 ```
-git clone https://github.com/your-username/real-time-todo-app.git
+git clone https://github.com/rakarmp/real-time-todo-app.git
 ```
 
 2. Navigate to the project directory:
