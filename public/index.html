@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real-Time To-Do List</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f8f8;
+      }
+
+      header {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 1rem 0;
+      }
+
+      #container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0.5rem 0;
+        padding: 0.5rem;
+        background-color: #f0f0f0;
+        border-radius: 3px;
+      }
+
+      input[type="checkbox"] {
+        margin-right: 1rem;
+      }
+
+      button {
+        background-color: #e74c3c;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        padding: 0.3rem 0.5rem;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #c0392b;
+      }
+
+      @media (max-width: 768px) {
+        #container {
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Real-Time To-Do List</h1>
+    </header>
+    <div id="container">
+      <ul id="todo-list"></ul>
+      <div>
+        <button onclick="addTodo()">Add New To-Do</button>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      const todoList = document.getElementById("todo-list");
+
+      socket.on("todoList", (todos) => {
+        todoList.innerHTML = "";
+        todos.forEach((todo, index) => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+              <input type="checkbox" ${
+                todo.completed ? "checked" : ""
+              } onchange="toggleComplete(${index})">
+              ${todo.text}
+              <button onclick="deleteTodo(${index})">Delete</button>
+            `;
+          todoList.appendChild(li);
+        });
+      });
+
+      function addTodo() {
+        const newTodoText = prompt("Enter a new to-do:");
+        if (newTodoText) {
+          socket.emit("addTodo", { text: newTodoText, completed: false });
+        }
+      }
+
+      function toggleComplete(index) {
+        socket.emit("toggleComplete", index);
+      }
+
+      function deleteTodo(index) {
+        socket.emit("deleteTodo", index);
+      }
+    </script>
+  </body>
+</html>
